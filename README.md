@@ -1,17 +1,18 @@
+# Pipe Toys
+
 fatcat    - buffered cat to multiple outputs
 tailpipe  - binary tail, follow sequence of numbered files
 spliff    - split input into numbered fragment files
 
-======
-fatcat
-======
 
-Usage: fatcat [options] <file>...
+## fatcat
 
-Options:
-  -i, --input  <file>  Input file
-  -b, --buffer <size>  Buffer size
-  -h, --help           See this text
+  Usage: fatcat [options] <file>...
+
+  Options:
+    -i, --input  <file>  Input file
+    -b, --buffer <size>  Buffer size
+    -h, --help           See this text
 
 Fat Cat (fatcat) is a combination of cat, buffer and tee. It accepts
 input from a single source, buffers it in memory and distributes it to
@@ -42,18 +43,16 @@ By default a 1MB buffer is allocated. This can be overridden using the
 
   $ fatcat -b 100MB
 
-======
-spliff
-======
+# spliff
 
-Usage: spliff [options] <file>
+  Usage: spliff [options] <file>
 
-Options:
-  -s, --size <size>    Chunk size
-  -i, --input  <file>  Input file
-  -b, --buffer <size>  Buffer size
-  -v, --verbose        Verbose output
-  -h, --help           See this text
+  Options:
+    -s, --size <size>    Chunk size
+    -i, --input  <file>  Input file
+    -b, --buffer <size>  Buffer size
+    -v, --verbose        Verbose output
+    -h, --help           See this text
 
 Split the input (which may be a named file or standard input) into fixed
 size, sequentially named chunks.
@@ -61,20 +60,18 @@ size, sequentially named chunks.
 By default each chunk will contain 1MiB. The chunk size can be set using
 the -s option.
 
-========
-tailpipe
-========
+# tailpipe
 
-Usage: tailpipe [options] <file>...
+  Usage: tailpipe [options] <file>...
 
-Options:
-  -i, --increment           Follow numbered files
-  -t, --timeout <seconds>   How long to wait for file growth
-      --wait [=<seconds>]   Wait for first file
-  -D, --delete              Delete each file after reading it
-      --fd=<fd>             Output to fd instead of stdout
-  -h, --help                See this text
-  -v, --verbose             Verbose output
+  Options:
+    -i, --increment           Follow numbered files
+    -t, --timeout <seconds>   How long to wait for file growth
+        --wait [=<seconds>]   Wait for first file
+    -D, --delete              Delete each file after reading it
+        --fd=<fd>             Output to fd instead of stdout
+    -h, --help                See this text
+    -v, --verbose             Verbose output
 
 tailpipe does for binary files what tail -f does for text files. Actually
 tail -f works with binaries too - but tailpipe is dedicated to the task
@@ -149,4 +146,6 @@ tailpipe will move on to the next command line argument - if any:
   $ tailpipe -i file00.txt
 
 would read file00.text up to file99.txt but no further.
+
+Andy Armstrong, andy@hexten.net
 
