@@ -8,6 +8,7 @@ extern const char *v_info;
 
 char *sstrdup(const char *s);
 ssize_t parse_size(const char *opt);
+int inc_name(char *name);
 void *alloc(size_t sz);
 void die(const char *msg, ...);
 void warn(const char *msg, ...);

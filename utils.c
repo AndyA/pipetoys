@@ -1,5 +1,6 @@
 /* utils.c */
 
+#include <ctype.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -128,6 +129,19 @@ ssize_t parse_size(const char *opt) {
 
   return -1;
 }
+
+int inc_name(char *name) {
+  int carry = 1;
+  int pos = strlen(name) - 1;
+  while (pos >= 0 && !isdigit(name[pos])) pos--;
+  while (carry && pos >= 0 && isdigit(name[pos])) {
+    name[pos]++;
+    if (name[pos] == '9' + 1) name[pos--] = '0';
+    else carry = 0;
+  }
+  return carry;
+}
+
 
 /* vim:ts=2:sw=2:sts=2:et:ft=c
  */

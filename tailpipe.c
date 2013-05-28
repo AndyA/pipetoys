@@ -5,7 +5,6 @@
  *
  */
 
-#include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -121,18 +120,6 @@ static void parse_options(int *argc, char ***argv) {
 static int exists(const char *fn) {
   struct stat st;
   return 0 == stat(fn, &st);
-}
-
-static int inc_name(char *name) {
-  int carry = 1;
-  int pos = strlen(name) - 1;
-  while (pos >= 0 && !isdigit(name[pos])) pos--;
-  while (carry && pos >= 0 && isdigit(name[pos])) {
-    name[pos]++;
-    if (name[pos] == '9' + 1) name[pos--] = '0';
-    else carry = 0;
-  }
-  return carry;
 }
 
 static char *next_name(char *name) {
