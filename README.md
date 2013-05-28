@@ -1,18 +1,19 @@
 # Pipe Toys
 
-fatcat    - buffered cat to multiple outputs
-tailpipe  - binary tail, follow sequence of numbered files
-spliff    - split input into numbered fragment files
-
+* fatcat: buffered cat to multiple outputs
+* tailpipe: binary tail, follow sequence of numbered files
+* spliff: split input into numbered fragment files
 
 ## fatcat
 
+```
   Usage: fatcat [options] <file>...
 
   Options:
     -i, --input  <file>  Input file
     -b, --buffer <size>  Buffer size
     -h, --help           See this text
+```
 
 Fat Cat (fatcat) is a combination of cat, buffer and tee. It accepts
 input from a single source, buffers it in memory and distributes it to
@@ -20,31 +21,42 @@ one or more destinations.
 
 At its simplest it behaves like cat:
 
+```
   $ ls | fatcat | sort  # is just like...
   $ ls | cat | sort     # ...this
+```
 
 Unlike cat (and like tee) any named parameters are files to output to:
 
+```
   $ cat somefile | fatcat other1 other2
+```
 
 behaves like
 
+```
   $ cat somefile | tee other1 other2 > /dev/null
+```
 
 Note that when outputting to a file or files output to stdout is
 disabled.
 
 An input can be named like this:
 
+```
   $ fatcat -i somefile other1 other2
+```
 
 By default a 1MB buffer is allocated. This can be overridden using the
 -b option:
 
+```
   $ fatcat -b 100MB
+```
 
 # spliff
 
+```
   Usage: spliff [options] <file>
 
   Options:
@@ -53,6 +65,7 @@ By default a 1MB buffer is allocated. This can be overridden using the
     -b, --buffer <size>  Buffer size
     -v, --verbose        Verbose output
     -h, --help           See this text
+```
 
 Split the input (which may be a named file or standard input) into fixed
 size, sequentially named chunks.
@@ -62,6 +75,7 @@ the -s option.
 
 # tailpipe
 
+```
   Usage: tailpipe [options] <file>...
 
   Options:
@@ -72,6 +86,7 @@ the -s option.
         --fd=<fd>             Output to fd instead of stdout
     -h, --help                See this text
     -v, --verbose             Verbose output
+```
 
 tailpipe does for binary files what tail -f does for text files. Actually
 tail -f works with binaries too - but tailpipe is dedicated to the task
@@ -79,7 +94,9 @@ and provides a few features that tail does not.
 
 Invoked with a filename like this
 
+```
   $ tailpipe somefile
+```
 
 tailpipe will output the entire current contents of somefile and then
 wait for somefile to be appended to. Each time more data is written to
@@ -87,7 +104,9 @@ somefile tailpipe will output it.
 
 You can give tailpipe multiple files
 
+```
   $ tailpipe somefile anotherfile
+```
 
 As before all of somefile will be read and output. What happens then
 depends on whether anotherfile exists. If it doesn't exist tailpipe will
@@ -98,7 +117,9 @@ anotherfile.
 To make tailpipe give up waiting altogether after a certain period of
 time use the timeout option:
 
+```
   $ tailpipe -t 10 somefile
+```
 
 As before tailpipe will output the contents of somefile. It will then
 wait for up to 10 seconds for somefile to be extended. Each time
@@ -109,7 +130,9 @@ Normally tailpipe will complain if the first named file doesn't initially
 exist. You can ask tailpipe to wait for the first file to be created
 using the wait option:
 
+```
   $ tailpipe --wait=10 somefile
+```
 
 That will wait for up to 10 seconds for somefile to be created. If you
 use --wait on its own without specifying a timeout tailpipe will
@@ -117,13 +140,17 @@ wait for ever.
 
 Often it's useful to be able to work with sequentially named files:
 
+```
   $ ls
   dat00000.bin dat00001.bin dat00002.bin
+```
 
 The -i option tells tailpipe to attempt to increment a numeric filename
 to generate a sequence of such names:
 
+```
   $ tailpipe -i dat00000.bin
+```
 
 Given the above three files (dat000000.bin, dat00001.bin & dat00002.bin)
 tailpipe will read each of them in turn and then wait for dat00003.bin to
@@ -131,7 +158,9 @@ be created.
 
 It is possible to name multiple files with the -i option:
 
+```
   $ tailpipe -i dat00000.bin extra00000.bin
+```
 
 In that case tailpipe will read as many dat#####.bin files as it can find
 but switch to reading the extra#####.bin sequence as soon as
@@ -143,7 +172,9 @@ of digits are the only part of the name tailpipe will incrememnt and when
 it runs out of digits the sequence of files is considered complete and
 tailpipe will move on to the next command line argument - if any:
 
+```
   $ tailpipe -i file00.txt
+```
 
 would read file00.text up to file99.txt but no further.
 
