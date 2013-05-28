@@ -6,7 +6,7 @@ SUBDIRS = . t
 
 ACLOCAL_AMFLAGS = -I m4
 
-lib_LTLIBRARIES = libpipetoys.la
+noinst_LTLIBRARIES = libpipetoys.la
 
 bin_PROGRAMS = fatcat tailpipe spliff
 
