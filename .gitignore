@@ -1,5 +1,7 @@
 *.d
 *.o
+.*.sw?
+/Session.vim
 fatcat
 spliff
 tailpipe
