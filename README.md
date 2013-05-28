@@ -59,7 +59,7 @@ overridden using the -b option:
 # spliff
 
 ```
-  Usage: spliff [options] <file>
+  Usage: spliff [options] <file>...
 
   Options:
     -s, --size <size>    Chunk size
@@ -74,6 +74,16 @@ size, sequentially named chunks.
 
 By default each chunk will contain 1MiB. The chunk size can be set using
 the -s option.
+
+If multiple files are named spliff will hard link together all the files
+for each particular chunk to produce sequences of chunks that can be
+consumed by independent tailpipe instances:
+
+```
+  $ some-command | spliff s1/000000000 s2/000000000 &
+  $ tailpipe -D -i s1/000000000 | some-other-command &
+  $ tailpipe -D -i s2/000000000 | yet-another-command &
+```
 
 # tailpipe
 

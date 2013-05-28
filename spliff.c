@@ -82,21 +82,25 @@ static void parse_options(int *argc, char ***argv) {
 
   *argc -= optind;
   *argv += optind;
-
-  if (*argc != 1) usage();
 }
+
+struct wtr_link {
+  char *file;
+  struct wtr_link *next;
+};
 
 struct wtr_ctx {
   buffer_reader *br;
   char *file;
   pthread_t t;
+  struct wtr_link *links;
 };
 
-static void next_name(struct wtr_ctx *cx) {
-  char *nn = sstrdup(cx->file);
-  if (inc_name(nn)) die("Can't increment %s", cx->file);
-  free(cx->file);
-  cx->file = nn;
+static void next_name(char **np) {
+  char *nn = sstrdup(*np);
+  if (inc_name(nn)) die("Can't increment %s", *np);
+  free(*np);
+  *np = nn;
 }
 
 static void clip_iov(struct iovec *iov, int *iovcnt, size_t limit) {
@@ -121,7 +125,7 @@ static void *writer(void *ctx) {
     if (spc == 0) break;
 
     if (fd == -1) {
-      if (inc++) next_name(cx);
+      if (inc) next_name(&cx->file);
       fd = open(cx->file, O_WRONLY | O_CREAT
 #ifdef O_LARGEFILE
                 | O_LARGEFILE
@@ -130,7 +134,16 @@ static void *writer(void *ctx) {
                );
       if (fd < 0) die("Can't write %s: %s", cx->file, strerror(errno));
       mention("Writing %s", cx->file);
+
+      for (struct wtr_link *l = cx->links; l; l = l->next) {
+        if (inc) next_name(&l->file);
+        if (link(cx->file, l->file))
+          die("Can't link %s to %s: %s", cx->file, l->file, strerror(errno));
+        mention("    and %s", l->file);
+      }
+
       cr = splitsize;
+      inc++;
     }
 
     clip_iov(iov.iov, &iov.iovcnt, cr);
@@ -149,15 +162,24 @@ static void *writer(void *ctx) {
   return NULL;
 }
 
-static struct wtr_ctx *add_writer(buffer *b, char *file) {
+static struct wtr_ctx *make_writer(buffer *b, char *file, int nlink, char *linkv[]) {
   struct wtr_ctx *ctx = alloc(sizeof(struct wtr_ctx));
   ctx->br = b_add_reader(b);
   ctx->file = sstrdup(file);
+  ctx->links = NULL;
+
+  for (int i = 0; i < nlink; i++) {
+    struct wtr_link *link = alloc(sizeof(struct wtr_link));
+    link->file = sstrdup(linkv[i]);
+    link->next = ctx->links;
+    ctx->links = link;
+  }
+
   pthread_create(&ctx->t, NULL, writer, ctx);
   return ctx;
 }
 
-static void spliff(char *file) {
+static void spliff(char *file, int nlink, char *linkv[]) {
   buffer *b = b_new(bufsize);
   int ifd = 0;
   struct wtr_ctx *cx;
@@ -171,7 +193,7 @@ static void spliff(char *file) {
     if (ifd < 0) die("Can't read %s: %s", infile, strerror(errno));
   }
 
-  cx = add_writer(b, file);
+  cx = make_writer(b, file, nlink, linkv);
 
   for (;;) {
     buffer_iov iov;
@@ -193,7 +215,7 @@ static void spliff(char *file) {
 
 int main(int argc, char *argv[]) {
   parse_options(&argc, &argv);
-  spliff(argv[0]);
+  spliff(argv[0], argc - 1, argv + 1);
   return 0;
 }
 
