@@ -107,7 +107,6 @@ static struct {
 };
 
 ssize_t parse_size(const char *opt) {
-  int i;
   char *end;
   double scale = 1;
   unsigned long val = strtoul(opt, &end, 10);
@@ -117,7 +116,7 @@ ssize_t parse_size(const char *opt) {
   if (!*end)
     return (ssize_t) val * scale;
 
-  for (i = 0; i < sizeof(size_unit) / sizeof(size_unit[0]); i++) {
+  for (unsigned i = 0; i < sizeof(size_unit) / sizeof(size_unit[0]); i++) {
     if (!strcmp(end, size_unit[i].name)) {
       scale = size_unit[i].scale;
       if (scale < 100) scale = pow(2, scale);
