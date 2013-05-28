@@ -47,8 +47,10 @@ An input can be named like this:
   $ fatcat -i somefile other1 other2
 ```
 
-By default a 1MB buffer is allocated. This can be overridden using the
--b option:
+Sometimes it's useful to have a version of cat that can buffer more data
+to even out disparities between the rates at which data is being
+produced and consumed. By default a 1MB buffer is allocated. This can be
+overridden using the -b option:
 
 ```
   $ fatcat -b 100MB
@@ -177,6 +179,28 @@ tailpipe will move on to the next command line argument - if any:
 ```
 
 would read file00.text up to file99.txt but no further.
+
+One interesting use for tailpipe, in conjunction with spliff, is to
+implement a pipe that is backed by the filesystem. This can be useful
+when you need a pipe with effectively unlimited buffer size. To do this
+have spliff split a stream into a directory:
+
+```
+  $ some-process | spliff -s 10K /tmp/work/00000000
+```
+
+And in another terminal have tailpipe read destructively from the same
+directory:
+
+```
+  $ tailpipe -D -i /tmp/work/00000000 | some-other-process
+```
+
+Given enough disk space the consuming process can be stopped and started
+and can run more slowly than the producing process without blocking it.
+The consumer doesn't even have to run at the same time: the same pattern
+works when the consumer isn't started until after the producer has
+terminated.
 
 Andy Armstrong, andy@hexten.net
 
