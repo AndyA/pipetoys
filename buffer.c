@@ -59,13 +59,13 @@ static size_t _b_get_buf(const buffer *b, buffer_iov *bi,
 
 static size_t _b_space(buffer *b) {
   buffer_reader *br;
-  size_t space = 0;
+  ssize_t space = 0;
   for (br = b->br; br; br = br->next) {
     ssize_t sp = br->pos - b->pos;
     if (sp <= 0) sp += b->size;
     if (space == 0 || sp < space) space = sp;
   }
-  if (space > 0) return space - 1;
+  if (space > 0) return (size_t) space - 1;
   return 0;
 }
 
