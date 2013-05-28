@@ -1,0 +1,6 @@
+*.d
+*.o
+fatcat
+spliff
+tailpipe
+version.h
